@@ -8,6 +8,8 @@
  * Disable any style in the extension!
  *
  * skins from https://github.com/darshandsoni/asciidoctor-skins
+ *
+ *
  */
 
 // ----------------------------------------------------------------------------- Config
@@ -23,7 +25,8 @@ var THEMES = 'always' // ['always', ':themes:', 'never']
 
 // --------------------------------------------------------------------------- Internal
 var D = document
-var S = localStorage
+
+//var S = localStorage
 var byid = function(id) {
     return D.getElementById(id)
 }
@@ -35,36 +38,20 @@ function docbody() {
 function is_set(s) {
     return docbody().innerText.indexOf(s) > -1
 }
-
+function S() {
+    // we can't ref local storage global, crashes all when sandboxed:
+    return localStorage
+}
 function get_cur_theme(typ) {
-    let cur_theme = S.getItem('cur_theme' + typ)
+    let cur_theme = S().getItem('cur_theme' + typ)
     return cur_theme ? cur_theme : dflt_theme[typ]
 }
-function set_cur_theme(t, typ) {
-    S.setItem('cur_theme' + typ, t)
-}
-// theme config for adoc itself and the code:
-var TH = {
-    adoc: {
-        urlpth: '/stylesheets/',
-        ext_id: 'asciidoctor-browser-style',
-        ddtitle: 'Theme Selector (Alt-s)',
-        ddid: 'adoc_switcher_dropdown',
-        ddaccesskey: 's',
-        query_sel: 'theme',
-    },
-    code: {
-        urlpth: '/highlightjs/',
-        ext_id: 'asciidoctor-browser-github-highlight-style',
-        ddtitle: 'Code Selector (Alt-c)',
-        ddid: 'code_switcher_dropdown',
-        ddaccesskey: 'c',
-        query_sel: 'ctheme',
-    },
+function remember_cur_theme(t, typ) {
+    S().setItem('cur_theme' + typ, t)
 }
 
 function allthemes() {
-    return TH.index
+    return D.TH.index
 }
 
 function repl(s, l) {
@@ -73,11 +60,11 @@ function repl(s, l) {
 }
 function make_theme_switchers() {
     // theme switchers
-    var toc = byid('toc')
-    if (!toc) {
-        // don't know how to find when the extension is done rendering :-/
-        return setTimeout(make_theme_switchers, 100)
-    }
+    // wait until loaded, comes from server
+    // if (!allthemes()['adoc']) {
+    //     // don't know how to find when the extension is done rendering :-/
+    //     return setTimeout(make_theme_switchers, 100)
+    // }
     let switchers = D.createElement('table')
     switchers.id = 'switchers'
     docbody().appendChild(switchers)
@@ -95,7 +82,7 @@ function make_theme_switchers() {
         d =
             '\n<select title="ddtitle" name="switcher_dropdown" id="ddid" accesskey="ddaccesskey"'
         d += ' onchange="set_theme(this.value, \'ddtyp\')">\n'
-        m = TH[typ]
+        m = D.TH[typ]
         d = repl(d, [
             ['ddaccesskey', m.ddaccesskey],
             ['ddtitle', m.ddtitle],
@@ -103,6 +90,7 @@ function make_theme_switchers() {
             ['ddtyp', typ],
         ])
         skins = allthemes()[typ]
+        if (!skins) debugger
         for (let i = 0; i < skins.length; i++) {
             f = skins[i]
             sel = cur_theme == f ? ' selected ' : ''
@@ -118,15 +106,32 @@ function make_theme_switchers() {
     }
 }
 
+function ext_has_css_set() {
+    // is the original style set? if so: dust it:
+    let a = document.getElementById('asciidoctor-browser-style')
+    if (a && a.href && a.href.indexOf('chrome') > -1) return true
+    return false
+}
+
 function insert_ctheme_txt() {
     return insert_theme_txt(this.responseText, 'code', true)
 }
-
 function insert_theme_txt(txt, typ, sync_or_code) {
     if (!sync_or_code) {
         typ = 'adoc'
         txt = this.responseText
     } // async return for adoc
+    if (typ == 'adoc' && D.TH.has_css_set) {
+        function rmorigcss() {
+            let a = document.getElementById('asciidoctor-browser-style')
+            if (!a) {
+                // not yet inserted. wait, it MUST be removed, otherwise crap on the screen:
+                return setTimeout(rmorigcss, 10)
+            }
+            a.parentElement.removeChild(a)
+        }
+    }
+
     let t = byid('theme_sel_css' + typ)
     t && t.parentElement.removeChild(t)
     let n = get_cur_theme(typ)
@@ -141,21 +146,21 @@ function insert_theme_txt(txt, typ, sync_or_code) {
     }
     t.appendChild(D.createTextNode(txt))
     if (typ == 'code') return
+    if (!D.axattrs.themes) return
     //postprocessing - boot styles don't support toc:left. But we want it nevertheless,
     // so:
+    let ta = document.querySelector('#toc a')
+    if (!ta) return
+    // colors and style of switcher boxes, dependend on boot or not boot theme:
     let pl = ''
     let pr = ''
     let bg = window
-        .getComputedStyle(document.querySelector('#toc a'), null)
+        .getComputedStyle(ta, null)
         .getPropertyValue('background-color')
     byid('adoc_switcher_dropdown').style['background-color'] = bg
     byid('code_switcher_dropdown').style['background-color'] = bg
     byid('adoc_switcher_dropdown').style['border-color'] = bg
     byid('code_switcher_dropdown').style['border-color'] = bg
-    // is the original style set? if so: dust it:
-    let a = document.getElementById('asciidoctor-browser-style')
-    if (a && a.href && a.href.indexOf('chrome') > -1)
-        a.parentElement.removeChild(a)
 
     if (n.indexOf('boot-') > -1) {
         pl = '10em'
@@ -169,7 +174,7 @@ function insert_theme_txt(txt, typ, sync_or_code) {
 }
 
 function set_theme(theme, typ) {
-    let th = TH[typ]
+    let th = D.TH[typ]
     let isinit = theme ? false : true
     let url,
         base = SERVER_URL + th.urlpth
@@ -192,9 +197,9 @@ function set_theme(theme, typ) {
     }
     theme = theme ? theme : get_cur_theme(typ)
     let themes = allthemes()[typ]
-    if (themes.indexOf(theme) < 0) return
+    if (themes && themes.indexOf(theme) < 0) return
     if (get_cur_theme(typ) == theme && !isinit) return
-    set_cur_theme(theme, typ)
+    remember_cur_theme(theme, typ)
     // naa, they are cached, loaded in 1ms says network inspector, and its a meg:
     // let t = S.getItem('theme_' + typ + theme)
     // if (t) {
@@ -240,23 +245,33 @@ function make_css_container_elmt() {
     }
 }
 
-function have_index() {
-    TH.index = JSON.parse(this.responseText)
+function loaded_themes() {
+    // callback after load - we poll for index set in wait_rendered:
+    D.TH.index = JSON.parse(this.responseText)
+    console.log('have set', D.TH.index)
 }
 function wait_rendered() {
-    if (!byid('content' || !TH.index)) {
-        return setTimeout(wait_rendered, 20)
+    // blocking for async and rendering results:
+    if (!D.TH.index || !byid('content')) {
+        console.log('waiting for content and theme index')
+        return setTimeout(wait_rendered, 5)
     }
-    if (TH.index == 'offline') return
-    make_css_container_elmt()
+    if (ext_has_css_set()) D.TH.has_css_set = true
+    if (D.TH.index == 'offline') return
     D.axattrs.themes && make_theme_switchers()
     // sets stored themes:
     set_theme(false, 'adoc')
     set_theme(false, 'code')
 }
 
+if (D.axattrs) {
+    if (D.TH.has_css_set) {
+        set_theme(false, 'adoc')
+        set_theme(false, 'code')
+    }
+}
+
 if (!D.axattrs) {
-    docbody().innerHTML = 'rendering...'
     // Initial rendering, we see the source (only) now!
     // var targetNode = document.querySelector('body')
     // var observerOptions = {
@@ -272,8 +287,28 @@ if (!D.axattrs) {
     // }
     // var observer = new MutationObserver(callback)
     // observer.observe(targetNode, observerOptions)
+    // theme config for adoc itself and the code:
+    D.TH = {
+        adoc: {
+            urlpth: '/stylesheets/',
+            ext_id: 'asciidoctor-browser-style',
+            ddtitle: 'Theme Selector (Alt-s)',
+            ddid: 'adoc_switcher_dropdown',
+            ddaccesskey: 's',
+            query_sel: 'theme',
+        },
+        code: {
+            urlpth: '/highlightjs/',
+            ext_id: 'asciidoctor-browser-github-highlight-style',
+            ddtitle: 'Code Selector (Alt-c)',
+            ddid: 'code_switcher_dropdown',
+            ddaccesskey: 'c',
+            query_sel: 'ctheme',
+        },
+        index: false, // from server
+        has_css_set: false, // will be inserted again and again.
+    }
 
-    window.TH = TH
     let tocleft =
         TOC_LEFT == 'never'
             ? false
@@ -291,14 +326,20 @@ if (!D.axattrs) {
 
     D.axattrs = {tocleft: tocleft, themes: themes}
     if (themes) {
+        function offline() {
+            D.TH.index = 'offline'
+        }
+        // make the switchers, add all available themes into them, from the server:
         let r = new XMLHttpRequest()
-        r.addEventListener('load', have_index)
-        r.addEventListener('error', function() {
-            TH.index = 'offline'
-        })
+        r.addEventListener('load', loaded_themes)
+        r.addEventListener('abort', offline)
+        r.addEventListener('error', offline) // won't see those, the extension is overwriting xhr
         r.open('GET', SERVER_URL + '/index.txt')
         r.send()
+    } else {
+        D.TH.index = 'n.a.'
     }
+    make_css_container_elmt()
     //
     // many styles import this, and we pull from remote so we would not get them:
     // don't want to change the css-es for the skins
