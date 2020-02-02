@@ -51,7 +51,7 @@ This repo provides such a script, which adds support for
 
 [source,bash]
 ----
-wget https://raw.githubusercontent.com/AXGKl/adoctools/master/browser/ax-adoc-chrome.js
+wget https://raw.githubusercontent.com/axiros/adoctools/master/browser/ax-adoc-chrome.js
 ----
 
 2. Configure the extension to use it:

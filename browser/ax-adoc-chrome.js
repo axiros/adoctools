@@ -18,7 +18,7 @@
 // for self hosting, e.g. nginx:  add_header Access-Control-Allow-Origin '*';
 // Server serves: /stylesheets/.. and /highlightjs/... under the base url
 var SERVER_URL =
-    'https://raw.githubusercontent.com/AXGKl/adoctools/master/server/asciidoctor'
+    'https://raw.githubusercontent.com/axiros/adoctools/master/server/asciidoctor'
 
 var TOC_LEFT = 'always' // ['always', ':toc:' ':toc: left', 'never']
 var THEMES = 'always' // ['always', ':themes:', 'never']
