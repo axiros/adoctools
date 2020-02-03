@@ -122,12 +122,12 @@ Fortunatelly at least the syncronous style rewrites necessary for the side toc d
 E.g. for https://raw.githubusercontent.com/axiros/adoctools/master/README.adoc[this document] you get something like:
 
 
-image:gh.png[gh, 400,300]
+image:gh.png[gh, 400]
 
 https://raw.githubusercontent.com/asciidoctor/asciidoctor.org/master/docs/_includes/table-formatting.adoc[Here] is another example to try - again you should see the sidebar toc:
 
 
-image:ex2.png[example2, 400,300]
+image:ex2.png[example2, 400]
 
 We can *not* inject custom styles into the document though, i.e. the page will be rendered using the style which is configured in the extension incl. its code style.
 
