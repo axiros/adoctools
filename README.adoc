@@ -23,7 +23,7 @@ When you see raw https://asciidoctor.org[asciidoctor] source in your browser, th
 
 image:adocraw.png[asciidoc raw, 400]
 
-What you *probably* want to see instead, is something like this:
+What you *probably* want to see instead is something like this:
 
 image:rendered.png[asciidoc rendered,400]
 
