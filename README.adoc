@@ -5,6 +5,17 @@
 :imagesdir: docs/images
 :themes:
 
+While code documentation generation and publishing to e.g. Github pages, using static page generation tools, it is often desirable to get docu rendered directly within the repository browser:
+
+- You do not need to set up a build pipeline only to get documentation online
+- Version support is being delivered by definition (since yes, docu should stay with the code)
+- Access control is already set up for the code browser, so comes out of the box. This is not always desired but in most cases it is, especially when docu links directly into the source.
+
+
+Repo browsing frontends often do support limitted rendering of common text formats, like `.md`, `.rst` or, as you can see, also asciidoctor, `.adoc`.
+
+This project tries to help make the viewing experience a bit bitter, for the `.adoc` format.
+
 
 == The Asciidoctor Browser Extension
 
