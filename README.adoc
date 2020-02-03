@@ -1,5 +1,6 @@
 = Asciidoctor Tools
 :toc: left
+:toclevels: 5
 :highlightjs-theme: monokai
 :imagesdir: docs/images
 :themes:
@@ -39,9 +40,9 @@ The extension allows to hook in custom javascript.
 This repo provides such a script, which adds support for
 
 - `:toc: left`, support - i.e. a fixed table of contents on the left side, useful for longer documents
-- a variety of default themes
-- custom code themes
+- a https://darshandsoni.com/asciidoctor-skins/screenshots/[bigger] variety of default themes
 - theme switchers and query string support for `?theme=<theme name>`
+- any code https://highlightjs.org/[hilightjs] theme
 
 
 
@@ -67,8 +68,11 @@ NOTE: We set `toc=left` always, this is optional.
 
 Thats it. You get two theme selector boxes, one for code style and one for the asciidoctor skin.
 
+image:ex_ma_teal.png[dark, 400]
+image:ex_noteboo.png[dark, 400]
+image:ex_boot_sl.png[dark, 400]
+image:ex_gazette.png[dark, 400]
 image:fed.png[fedora, 400]
-
 image:dark.png[dark, 400]
 
 You have quite a few variations regarding style - see link:server/asciidoctor/index.txt[here]. All taken from https://github.com/darshandsoni/asciidoctor-skins[darshandsoni/asciidoctor-skins], unmodified.
@@ -89,8 +93,9 @@ NOTE: Nevertheless we hook in in _prerender_ phase, in order to see set attribut
 
 === Known Problems / TODOs
 
-* Sandboxed mode: Some servers deliver the site in sandboxed mode. Then the custom JS can't work:
+==== Sandboxed mode
 
+Some servers deliver the source in sandboxed mode - e.g. github(!). Then the custom JS is running limitted:
 
 .console output
 [source]
@@ -98,13 +103,31 @@ NOTE: Nevertheless we hook in in _prerender_ phase, in order to see set attribut
 Blocked script execution in 'https://raw.githubusercontent.com/asciidoctor/asciidoctor-browser-extension/master/README.adoc' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.
 ----
 
+Fortunatelly at least the syncronous style rewrites necessary for the side toc do work:
 
-* No TOC: When the original document does not set a toc attribute, we can't produce one (did not want to manually recurse over Hx tags in the DOM).
+E.g. for https://raw.githubusercontent.com/axiros/adoctools/master/README.adoc[this document] you get something like:
 
-Workaround: Configure `toc=left` in the Extension, like suggested in the screenshot above.
+image:gh.png[gh]
+
+We cannot inject custom styles into the document though, i.e. the page will be rendered using the style which is configured in the extension incl. its code style.
+
+==== No TOC
+
+When the original document does not set a toc attribute, we do not produce one (did not want to manually recurse over Hx tags in the DOM).
+
+Solution: Configure `toc=left` in the Extension, like suggested in the screenshot above, i.e. tell asciidoctor to always produce one.
+
+==== Sporadic Rendering Errors
+
+Some styles do not define all attributes, especially the bootstrap derived ones.
+Then your extension's set stylesheet's css "leaks" into the document, since we cannot prevent the extension to insert the default stylesheet before we overwrite.
+
+Workaround: Set the extension stylesheet to a rather neutral one, matching your preferences.
 
 
-* No offline mode. Requires access to server
+==== No offline mode
+
+Requires access to server.
 
 Currently the script is not storing the themes locally explicitely, but pulls them from a configurable server (default: This github repo), which would not work offline.
 
