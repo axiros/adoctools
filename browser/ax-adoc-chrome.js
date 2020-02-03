@@ -263,6 +263,31 @@ function wait_rendered() {
     // sets stored themes:
     set_theme(false, 'adoc')
     set_theme(false, 'code')
+    if (D.TH.qsappend == 'local') run_qs_append_feature()
+}
+
+function run_qs_append_feature() {
+    // query string append feature for bitbucket's fubared revision in query strings:
+    function replace_link(el, attr, thishost, thisqs) {
+        orig = el[attr]
+        if (orig.indexOf(thishost) != 0) return
+        orig = new URL(orig)
+        s = orig.search.replace('?', '')
+        if (s.indexOf(thisqs) == -1) {
+            el[attr] =
+                el[attr].split('?', 1)[0] + '?' + s + '&' + thisqs + '#' + orig.hash
+        }
+    }
+    let thishost = new URL(location.href)
+    let thisqs = thishost.search.replace('?', '')
+    thishost = thishost.protocol + '//' + thishost.hostname
+    if (!thisqs) return
+    document.querySelectorAll('a').forEach(function(el) {
+        replace_link(el, 'href', thishost, thisqs)
+    })
+    document.querySelectorAll('img').forEach(function(el) {
+        replace_link(el, 'src', thishost, thisqs)
+    })
 }
 
 if (D.axattrs) {
@@ -308,7 +333,11 @@ if (!D.axattrs) {
         },
         index: false, // from server
         has_css_set: false, // will be inserted again and again.
+        qsappend: false,
     }
+    // query string append feature for bitbucket (via doc or query string, when otherwise hosted):
+    D.TH.qsappend = is_set(':qsappend: local') ? 'local' : false
+    if (location.href.indexOf('qsappend=local') > -1) D.TH.qsappend = 'local'
 
     let tocleft =
         TOC_LEFT == 'never'
@@ -319,11 +348,7 @@ if (!D.axattrs) {
             ? true
             : true
     let themes =
-        THEMES == 'never'
-            ? false
-            : THEMES == 'always'
-            ? true
-            : is_set(':themes:')
+        THEMES == 'never' ? false : THEMES == 'always' ? true : is_set(':themes:')
 
     D.axattrs = {tocleft: tocleft, themes: themes}
     if (themes) {

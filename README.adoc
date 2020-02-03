@@ -51,12 +51,30 @@ The extension allows to hook in custom javascript.
 
 This repo provides such a script, which adds support for
 
-- `:toc: left`, support - i.e. a fixed table of contents on the left side, useful for longer documents
-- a https://darshandsoni.com/asciidoctor-skins/screenshots/[bigger] variety of default themes
-- theme switchers and query string support for `?theme=<theme name>`
-- any code https://highlightjs.org/[hilightjs] theme
+- Fixed sidebar TOC (`:toc: left`) support - i.e. a table of contents on the left side. Rather useful for longer documents.
+- A https://darshandsoni.com/asciidoctor-skins/screenshots/[bigger] variety of default themes
+- Theme switchers and query string support for a suggested theme: (via `?theme=<theme name>`)
+- Any code https://highlightjs.org/[hilightjs] theme
+- Handling revisioned browsing also for repo viewers which have the revision in the query string instead of the path (which effectively disables relative links w/o that feature).
 
+==== Details
 
+===== Link Rewrites for Revisioned Browsing
+
+If the document specifies `:qsappend: local` or the query string contains `qsappend=local` then we'll rewrite all hrefs and src attributes of the DOM, with a query string parameter added, like at page load, provided that the hostname of the link is identical to the one at page load.
+
+That erradicates the need to adapt all links to the hosting environment (looking at _you_, bitbucket).
+
+Example:
+
+.(page is at ".../docs/index.adoc?&at=refs%2Fheads%2Ffeature%2Fcontainers")
+|===
+|Source contains | "link: ./install.adoc?foo=bar"
+|Rendered | "https://my.bitbucket.com/myproject/raw/docs/install.adoc?foo=bar"
+|Rewritten | "https://my.bitbucket.com/myproject/raw/docs/install.adoc?&foo=bar&at=refs%2Fheads%2Ffeature%2Fcontainers"
+|===
+
+NOTE: This not necessary for sane repo browsers, with the revision in the path, like Github or Gitlab.
 
 === Installation
 
