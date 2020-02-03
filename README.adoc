@@ -4,6 +4,7 @@
 :highlightjs-theme: monokai
 :imagesdir: docs/images
 :themes:
+:icons: font
 
 
 == The Asciidoctor Browser Extension
