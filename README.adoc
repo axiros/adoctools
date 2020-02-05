@@ -5,6 +5,29 @@
 :imagesdir: docs/images
 :themes:
 
+== Two Minutes Short Version
+
+In order to get asciidoctor source code rendered within your browser do this:
+
+. Install the Asciidoctor extension:
+
+    - Chrome, Opera: https://chrome.google.com/webstore/search/asciidoctor
+    - Firefox: https://addons.mozilla.org/de/firefox/addon/asciidoctorjs-live-preview/ 
+
+. Download addon script for themes and sidebar TOC: `wget https://raw.githubusercontent.com/axiros/adoctools/master/browser/ax-adoc-chrome.js`
+
+. Configure extension to use it (right click -> options):
+
+image:https://raw.githubusercontent.com/axiros/adoctools/master/docs/images/cfg.png[]
+
+CAUTION: Select "*before* the document has been rendered"
+
+. Check  'Enable the diagrams extension'.
+
+. Done.
+
+== Extended Version / Details
+
 While code documentation generation and publishing to e.g. Github pages, using static page generation tools, it is often desirable to get docu rendered directly within the repository browser:
 
 - You do not need to set up a build pipeline only to get documentation online
