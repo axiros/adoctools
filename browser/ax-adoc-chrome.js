@@ -11,7 +11,8 @@
  *
  *
  */
-
+// TODO: Encapsulate as module, we spam the namespace. But this is (not yet) a real js app
+//
 // ----------------------------------------------------------------------------- Config
 
 // CAUTION: server cors necessary!
@@ -35,8 +36,12 @@ var dflt_theme = {adoc: 'asciidoctor', code: 'github'}
 function docbody() {
     return D.getElementsByTagName('body')[0]
 }
-function is_set(s) {
-    return docbody().innerText.indexOf(s) > -1
+function is_set(s, getval = false) {
+    // get attribute set bool or its value
+    let i = docbody().innerText.split(s)
+    if (i.length == 1) return false
+    if (!getval) return true
+    return i[1].split('\n')[0].replace(' ', '')
 }
 function S() {
     // we can't ref local storage global, crashes all when sandboxed:
@@ -264,8 +269,14 @@ function wait_rendered() {
     set_theme(false, 'adoc')
     set_theme(false, 'code')
     if (D.TH.qsappend == 'local') run_qs_append_feature()
+    if (D.TH.toclogo) add_toc_logo()
 }
 
+function add_toc_logo() {
+    let img = D.createElement('img')
+    img.src = D.TH.toclogo
+    byid('toc').insertBefore(img, byid('toctitle'))
+}
 function run_qs_append_feature() {
     // query string append feature for bitbucket's fubared revision in query strings:
     function replace_link(el, attr, thishost, thisqs) {
@@ -274,8 +285,15 @@ function run_qs_append_feature() {
         orig = new URL(orig)
         s = orig.search.replace('?', '')
         if (s.indexOf(thisqs) == -1) {
-            el[attr] =
-                el[attr].split('?', 1)[0] + '?' + s + '&' + thisqs + '#' + orig.hash
+            el[attr] = (
+                el[attr].split('?', 1)[0] +
+                '?' +
+                s +
+                '&' +
+                thisqs +
+                '#' +
+                orig.hash
+            ).replace('&&', '&')
         }
     }
     let thishost = new URL(location.href)
@@ -295,6 +313,7 @@ if (D.axattrs) {
         set_theme(false, 'adoc')
         set_theme(false, 'code')
     }
+    if (D.TH.toclogo) add_toc_logo()
 }
 
 if (!D.axattrs) {
@@ -365,6 +384,7 @@ if (!D.axattrs) {
     } else {
         D.TH.index = 'n.a.'
     }
+    D.TH['toclogo'] = is_set(':toclogo:', true)
     make_css_container_elmt()
     //
     // many styles import this, and we pull from remote so we would not get them:

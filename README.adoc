@@ -53,11 +53,19 @@ This repo provides such a script, which adds support for
 
 - Fixed sidebar TOC (`:toc: left`) support - i.e. a table of contents on the left side. Rather useful for longer documents.
 - A https://darshandsoni.com/asciidoctor-skins/screenshots/[bigger] variety of default themes
-- Theme switchers and query string support for a suggested theme: (via `?theme=<theme name>`)
+- Theme switchers (via: `:theme:`) and query string support for a suggested theme: (via `?theme=<theme name>`)
 - Any code https://highlightjs.org/[hilightjs] theme
 - Handling revisioned browsing also for repo viewers which have the revision in the query string instead of the path (which effectively disables relative links w/o that feature).
+- Toc logo (`:toclogo: <url>`) 
 
 ==== Details
+
+===== Toc Logo
+
+Inserted before the TOC title. Choose an svg/png with transparent background.
+
+`:toclogo: https://static.foo.com/images/mylogo.svg`
+
 
 ===== Link Rewrites for Revisioned Browsing
 
