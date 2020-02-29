@@ -63,7 +63,7 @@ IMPORTANT: Install the extension and your *browser* will take care of the render
 NOTE: In repository browsers, you have to view the page as raw in order to get it rendered. +
 Means: Click the `raw view` button. +
 On github:
-image:raw.png[raw, 60]
+:image:raw.png[raw, 60]
 
 
 
