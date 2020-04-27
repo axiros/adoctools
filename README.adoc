@@ -212,6 +212,10 @@ Then your extension's set stylesheet's css "leaks" into the document, since we c
 Workaround: Set the extension stylesheet to a rather neutral one, matching your preferences.
 
 
+==== binread error
+
+Do not use data-uri=true as attribute in the config.
+
 ==== No offline mode
 
 Requires access to server.
