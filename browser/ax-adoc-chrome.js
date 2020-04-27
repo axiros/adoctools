@@ -63,6 +63,7 @@ function repl(s, l) {
     for (let i = 0; i < l.length; i++) s = s.replace(l[i][0], l[i][1])
     return s
 }
+
 function make_theme_switchers() {
     // theme switchers
     // wait until loaded, comes from server
@@ -171,6 +172,10 @@ function insert_theme_txt(txt, typ, sync_or_code) {
         pl = '10em'
         pr = '0px'
         if (n.indexOf('boot-cerulean') > -1) bg = 'gray'
+        document.querySelectorAll('pre code').forEach(function(el) {
+            el.style['white-space'] = 'pre'
+        })
+
         // make the toc be vertical for boot items, otherwise they float:
         document.querySelectorAll('#toc a').forEach(function(el) {
             el.style.float = 'none'

@@ -1,4 +1,5 @@
 = Asciidoctor Tools
+:version: 20200427
 :toc: left
 :toclevels: 5
 :highlightjs-theme: monokai
@@ -26,6 +27,63 @@ CAUTION: Select "*before* the document has been rendered"
 
 . Done.
 
+
+== Changelog
+
+- 20200427: Overwriting `white-space: pre wrap` for boot styles code boxes to `pre`, in order to not have ascii drawings wrapped on narrow screens.
+
+=== Installation
+
+1. Download script into any local directory:
+
+[source,bash]
+----
+wget https://raw.githubusercontent.com/axiros/adoctools/master/browser/ax-adoc-chrome.js
+----
+
+2. Configure the extension to use it:
+
+[cols="1,1"]
+.Extension config
+|===
+|image:cfg1.png[]
+|image:cfg.png[]
+|===
+
+NOTE: We set `toc=left` always, this is optional.
+
+Thats it. You get two theme selector boxes, one for code style and one for the asciidoctor skin.
+
+.Examples (raw view of .adoc sources in the browser with varying selected themes)
+|===
+|image:ex_ma_teal.png[dark, 400]| image:ex_noteboo.png[dark, 400]
+|image:ex_boot_sl.png[dark, 400]| image:ex_gazette.png[dark, 400]
+|image:fed.png[fedora, 400]     | image:dark.png[dark, 400]
+|===
+
+or
+
+image:graphs.png[graphs, 400]
+
+* You have quite a few variations regarding style - see link:server/asciidoctor/index.txt[here].
+* All adoc themes taken from https://github.com/darshandsoni/asciidoctor-skins[darshandsoni/asciidoctor-skins], unmodified (but a bit tweaked using our JS, e.g. for the side toc)
+* All code themes from https://highlightjs.org[hilightjs]
+
+TIP: To cycle through themes, hit `Alt-s` or `Alt-c` to focus, then arrow up or down.
+
+=== Configuration
+
+None - the file works standalone. Adapt the link:browser/ax-adoc-chrome.js[source] to your liking.
+
+=== Security
+
+* The file is injected as page script by the extension, i.e. has the same restrictions as any javascript.
+* The extension does not offer a messaging channel currently, i.e. there is no communication with the extension. Means we cannot modify the source *before* rendering - only the HTML after rendering, like any javascript.
+
+NOTE: Nevertheless we hook in in _prerender_ phase, in order to see set attributes while we have the source.
+
+
+
 == Extended Version / Details
 
 While code documentation generation and publishing to e.g. Github pages, using static page generation tools, it is often desirable to get docu rendered directly within the repository browser:
@@ -40,7 +98,7 @@ Repo browsing frontends often do support limitted rendering of common text forma
 This project tries to help make the viewing experience a bit better, for the https://asciidoctor.org/docs/asciidoc-syntax-quick-reference[`.adoc` format].
 
 
-== The Asciidoctor Browser Extension
+== Intro into the Subject: The Asciidoctor Browser Extension
 
 When you see raw https://asciidoctor.org[asciidoctor] source in your browser, then either you are viewing a local file or the server did not render it:
 
@@ -67,7 +125,7 @@ On github:
 
 
 
-== Custom Script
+== This Custom Script
 
 === Added Value 
 
@@ -108,51 +166,10 @@ Example:
 
 NOTE: This not necessary for sane repo browsers, with the revision in the path, like Github or Gitlab.
 
-=== Installation
 
-1. Download script into any local directory:
+===== Tweaks for Bootstrap Based Styles
 
-[source,bash]
-----
-wget https://raw.githubusercontent.com/axiros/adoctools/master/browser/ax-adoc-chrome.js
-----
-
-2. Configure the extension to use it:
-
-[cols="1,1"]
-.Extension config
-|===
-|image:cfg1.png[]
-|image:cfg.png[]
-|===
-
-NOTE: We set `toc=left` always, this is optional.
-
-Thats it. You get two theme selector boxes, one for code style and one for the asciidoctor skin.
-
-.Examples (raw view of .adoc sources in the browser with varying selected themes)
-|===
-|image:ex_ma_teal.png[dark, 400]| image:ex_noteboo.png[dark, 400]
-|image:ex_boot_sl.png[dark, 400]| image:ex_gazette.png[dark, 400]
-|image:fed.png[fedora, 400]     | image:dark.png[dark, 400]
-|===
-
-* You have quite a few variations regarding style - see link:server/asciidoctor/index.txt[here].
-* All adoc themes taken from https://github.com/darshandsoni/asciidoctor-skins[darshandsoni/asciidoctor-skins], unmodified (but a bit tweaked using our JS, e.g. for the side toc)
-* All code themes from https://highlightjs.org[hilightjs]
-
-TIP: To cycle through themes, hit `Alt-s` or `Alt-c` to focus, then arrow up or down.
-
-=== Configuration
-
-None - the file works standalone. Adapt the link:browser/ax-adoc-chrome.js[source] to your liking.
-
-=== Security
-
-* The file is injected as page script by the extension, i.e. has the same restrictions as any javascript.
-* The extension does not offer a messaging channel currently, i.e. there is no communication with the extension. Means we cannot modify the source *before* rendering - only the HTML after rendering, like any javascript.
-
-NOTE: Nevertheless we hook in in _prerender_ phase, in order to see set attributes while we have the source.
+Bootstrap has nice stylesheets but they sometimes collide for document viewing use cases. We adapted their CSS accordingly.
 
 
 === Known Problems / TODOs
