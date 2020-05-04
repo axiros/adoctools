@@ -1,9 +1,11 @@
 = Asciidoctor Tools
-:version: 20200427
+:version: 20200501
 :toc: left
 :toclevels: 5
 :highlightjs-theme: monokai
 :imagesdir: docs/images
+:tylesheet: foo.css
+:max-width: 20000px
 :themes:
 
 == Two Minutes Short Version
@@ -19,16 +21,37 @@ In order to get asciidoctor source code rendered within your browser do this:
 
 . Configure extension to use it (right click -> options):
 
-image:https://raw.githubusercontent.com/axiros/adoctools/master/docs/images/cfg.png[]
+    - Custom attributes: *source-highlighter=highlight.js toc=left*
+    - Safe mode: *unsafe*
+    - Enable the diagram extension: *checked*
+    - Poll for changes: *1s* To local files
+    - Server URL: *https://kroki.io* (or your company diagram rendering server, ask your admin)
+    - JavaScript: *ax-adoc-chrome* (click the Add a JavaScript Button, point to the downloaded file)
+    - Load the JavaScript…: *before the document has been rendered*
+    - image:https://raw.githubusercontent.com/axiros/adoctools/master/docs/images/cfg.png[]
 
-CAUTION: Select "*before* the document has been rendered"
-
-. Check  'Enable the diagrams extension'.
-
+. *Allow access to file URLs* in the Extension management of Chrome, if you want to render file URLs.
 . Done.
 
 
 == Changelog
+
+- 20200501: Pages toc support, below sections toc.
+[%collapsible]
+====
+Simply include it at the end of your docs, after a specific separator:
+
+[source, adoc]
+----
+==      ─────
+
+== <<intro#,icon:file[] Introduction>>
+== <<operators#,icon:file[] Operator Mechanics>>
+(...)
+----
+
+Key is the separator.
+====
 
 - 20200427: Overwriting `white-space: pre wrap` for boot styles code boxes to `pre`, in order to not have ascii drawings wrapped on narrow screens.
 

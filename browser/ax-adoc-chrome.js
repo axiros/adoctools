@@ -275,6 +275,29 @@ function wait_rendered() {
     set_theme(false, 'code')
     if (D.TH.qsappend == 'local') run_qs_append_feature()
     if (D.TH.toclogo) add_toc_logo()
+    add_docs_links()
+}
+
+function add_docs_links() {
+    let toc = byid('toc')
+    let lis = toc.getElementsByTagName('li')
+    let hr,
+        lnk,
+        li,
+        ch = false
+    for (var i = 0; i < lis.length; i++) {
+        li = lis[i]
+        // this is a unicode block space - use this!!
+        hr = li.firstElementChild
+        if (ch) {
+            lnk = byid(hr.href.split('#')[1])
+            hr.href = lnk.firstElementChild.href
+            lnk.innerHTML = ''
+        }
+        if (hr.innerText && hr.innerText.endsWith('──')) {
+            ch = true
+        }
+    }
 }
 
 function add_toc_logo() {
@@ -359,6 +382,10 @@ if (!D.axattrs) {
         has_css_set: false, // will be inserted again and again.
         qsappend: false,
     }
+
+    // // var docs = docbody().innerText.split('// DOCS: ')[1]
+    // if (docs) D.TH.docs = JSON.parse(docs)
+
     // query string append feature for bitbucket (via doc or query string, when otherwise hosted):
     D.TH.qsappend = is_set(':qsappend: local') ? 'local' : false
     if (location.href.indexOf('qsappend=local') > -1) D.TH.qsappend = 'local'
